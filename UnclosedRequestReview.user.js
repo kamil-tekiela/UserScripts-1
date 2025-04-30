@@ -4,9 +4,9 @@
 // @version      2.1.1
 // @description  Adds buttons to the chat buttons controls; clicking on the button takes you to the recent unclosed close vote request, or delete request query, then it scans the results and displays them along with additional information.
 // @author       @TinyGiant @rene @mogsdad @Makyen
-// @include      /^https?://chat\.stackoverflow\.com/rooms/(?:41570|90230|126195|68414|111347|126814|123602|167908|167826|253110|253305)(?:\b.*$|$)/
-// @include      /^https?://chat\.stackoverflow\.com/search.*[?&]room=(?:41570|90230|126195|68414|111347|126814|123602|167908|167826|253110|253305)(?:\b.*$|$)/
-// @include      /^https?://chat\.stackoverflow\.com/transcript/(?:41570|90230|126195|68414|111347|126814|123602|167908|167826|253110|253305)(?:\b.*$|$)/
+// @include      /^https?://chat\.stackoverflow\.com/rooms/(?:41570|90230|126195|68414|111347|126814|123602|167908|167826|253110|253305|210133)(?:\b.*$|$)/
+// @include      /^https?://chat\.stackoverflow\.com/search.*[?&]room=(?:41570|90230|126195|68414|111347|126814|123602|167908|167826|253110|253305|210133)(?:\b.*$|$)/
+// @include      /^https?://chat\.stackoverflow\.com/transcript/(?:41570|90230|126195|68414|111347|126814|123602|167908|167826|253110|253305|210133)(?:\b.*$|$)/
 // @include      /^https?://chat\.stackoverflow\.com/transcript/.*$/
 // @include      /^https?://chat\.stackoverflow\.com/users/.*$/
 // @require      https://github.com/SO-Close-Vote-Reviewers/UserScripts/raw/master/gm4-polyfill.js
@@ -2088,6 +2088,14 @@
                 if (/^@Natty (?:feedback|tp|fp|ne|report)\b/i.test(contentEl.textContent)) {
                     //Natty feedback: Treat as a del-pls request
                     requestTags.push(fakeRequestTags.delete);
+                }
+                if (monologue.classList.contains('user-11995760') && /Link to (?:question|post)/i.test(contentEl.textContent)) {
+                    // DharmanBot reports always contain a link either to the question or answer(post).
+                    if (/Link to Post/.test(contentEl.textContent)) {
+                        requestTags.push(fakeRequestTags.delete);
+                    } else if (/Link to question/.test(contentEl.textContent)) {
+                        requestTags.push(fakeRequestTags.close);
+                    }
                 }
             }
             //Consider it active if it's not a request, or if the request is active.
